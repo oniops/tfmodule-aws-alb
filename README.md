@@ -302,17 +302,18 @@ http_tcp_listener 리스너에 대한 라우팅 룰을 설정 합니다.
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| http_tcp_listener_arns  |	The ARN of the TCP and HTTP load balancer listeners created. |
-| http_tcp_listener_ids  |	The IDs of the TCP and HTTP load balancer listeners created. |
-| https_listener_arns  |	The ARNs of the HTTPS load balancer listeners created. |
-| https_listener_ids  |	The IDs of the load balancer listeners created. |
-| lb_arn  |	The ID and ARN of the load balancer we created. |
-| lb_arn_suffix  |	ARN suffix of our load balancer - can be used with CloudWatch. |
-| lb_dns_name  |	The DNS name of the load balancer. |
-| lb_id  |	The ID and ARN of the load balancer we created. |
-| lb_zone_id  |	The zone_id of the load balancer to assist with creating DNS records. |
-| target_group_arn_suffixes  |	ARN suffixes of our target groups - can be used with CloudWatch. |
-| target_group_arns  |	ARNs of the target groups. Useful for passing to your Auto Scaling group. |
-| target_group_names  |	Name of the target group. Useful for passing to your CodeDeploy Deployment Group. |
+| Name                      | Description                                                                        |
+|---------------------------|------------------------------------------------------------------------------------|
+| http_tcp_listener_arns    | 	The ARN of the TCP and HTTP load balancer listeners created.                      |
+| http_tcp_listener_ids     | 	The IDs of the TCP and HTTP load balancer listeners created.                      |
+| https_listener_arns       | 	The ARNs of the HTTPS load balancer listeners created.                            |
+| https_listener_ids        | 	The IDs of the load balancer listeners created.                                   |
+| lb_arn                    | 	The ID and ARN of the load balancer.                                              |
+| lb_arn_suffix             | 	ARN suffix of our load balancer - can be used with CloudWatch.                    |
+| lb_dns_name               | 	The DNS name of the load balancer.                                                |
+| lb_id                     | 	The ID and ARN of the load balancer.                                              |
+| lb_name                   | 	The name of the load balancer.                                                    |
+| lb_zone_id                | 	The zone_id of the load balancer to assist with creating DNS records.             |
+| target_group_arn_suffixes | 	ARN suffixes of our target groups - can be used with CloudWatch.                  |
+| target_group_arns         | 	ARNs of the target groups. Useful for passing to your Auto Scaling group.         |
+| target_group_names        | 	Name of the target group. Useful for passing to your CodeDeploy Deployment Group. |
