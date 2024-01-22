@@ -1,11 +1,11 @@
 locals {
   load_balancer_alias = var.load_balancer_type == "application" ? "alb" : "nlb"
-  name = format("%s%s-%s",var.context.name_prefix, var.lb_name==null ? "" : "-${var.lb_name}",local.load_balancer_alias)
+  name                = format("%s%s-%s", var.context.name_prefix, var.lb_name==null ? "" : "-${var.lb_name}", local.load_balancer_alias)
 }
 
 resource "aws_lb" "this" {
-  count     = var.create_lb ? 1 : 0
-  name      = local.name
+  count = var.create_lb ? 1 : 0
+  name  = local.name
 
   load_balancer_type = var.load_balancer_type
   internal           = var.internal
@@ -18,6 +18,8 @@ resource "aws_lb" "this" {
   enable_http2                     = var.enable_http2
   ip_address_type                  = var.ip_address_type
   drop_invalid_header_fields       = var.drop_invalid_header_fields
+
+  enforce_security_group_inbound_rules_on_private_link_traffic = var.enforce_security_group_inbound_rules_on_private_link_traffic
 
   # See notes in README (ref: https://github.com/terraform-providers/terraform-provider-aws/issues/7987)
   dynamic "access_logs" {
@@ -483,10 +485,14 @@ resource "aws_lb_listener" "frontend_http_tcp" {
     # Defaults to forward action if action_type not specified
     content {
       type             = lookup(default_action.value, "action_type", "forward")
-      target_group_arn = contains([null, "", "forward"], lookup(default_action.value, "action_type", "")) ? aws_lb_target_group.main[lookup(default_action.value, "target_group_index", count.index)].id : null
+      target_group_arn = contains([
+        null, "", "forward"
+      ], lookup(default_action.value, "action_type", "")) ? aws_lb_target_group.main[lookup(default_action.value, "target_group_index", count.index)].id : null
 
       dynamic "redirect" {
-        for_each = length(keys(lookup(default_action.value, "redirect", {}))) == 0 ? [] : [lookup(default_action.value, "redirect", {})]
+        for_each = length(keys(lookup(default_action.value, "redirect", {}))) == 0 ? [] : [
+          lookup(default_action.value, "redirect", {})
+        ]
 
         content {
           path        = lookup(redirect.value, "path", null)
@@ -499,7 +505,9 @@ resource "aws_lb_listener" "frontend_http_tcp" {
       }
 
       dynamic "fixed_response" {
-        for_each = length(keys(lookup(default_action.value, "fixed_response", {}))) == 0 ? [] : [lookup(default_action.value, "fixed_response", {})]
+        for_each = length(keys(lookup(default_action.value, "fixed_response", {}))) == 0 ? [] : [
+          lookup(default_action.value, "fixed_response", {})
+        ]
 
         content {
           content_type = fixed_response.value["content_type"]
@@ -534,10 +542,14 @@ resource "aws_lb_listener" "frontend_https" {
     # Defaults to forward action if action_type not specified
     content {
       type             = lookup(default_action.value, "action_type", "forward")
-      target_group_arn = contains([null, "", "forward"], lookup(default_action.value, "action_type", "")) ? aws_lb_target_group.main[lookup(default_action.value, "target_group_index", count.index)].id : null
+      target_group_arn = contains([
+        null, "", "forward"
+      ], lookup(default_action.value, "action_type", "")) ? aws_lb_target_group.main[lookup(default_action.value, "target_group_index", count.index)].id : null
 
       dynamic "redirect" {
-        for_each = length(keys(lookup(default_action.value, "redirect", {}))) == 0 ? [] : [lookup(default_action.value, "redirect", {})]
+        for_each = length(keys(lookup(default_action.value, "redirect", {}))) == 0 ? [] : [
+          lookup(default_action.value, "redirect", {})
+        ]
 
         content {
           path        = lookup(redirect.value, "path", null)
@@ -550,7 +562,9 @@ resource "aws_lb_listener" "frontend_https" {
       }
 
       dynamic "fixed_response" {
-        for_each = length(keys(lookup(default_action.value, "fixed_response", {}))) == 0 ? [] : [lookup(default_action.value, "fixed_response", {})]
+        for_each = length(keys(lookup(default_action.value, "fixed_response", {}))) == 0 ? [] : [
+          lookup(default_action.value, "fixed_response", {})
+        ]
 
         content {
           content_type = fixed_response.value["content_type"]
@@ -561,7 +575,9 @@ resource "aws_lb_listener" "frontend_https" {
 
       # Authentication actions only available with HTTPS listeners
       dynamic "authenticate_cognito" {
-        for_each = length(keys(lookup(default_action.value, "authenticate_cognito", {}))) == 0 ? [] : [lookup(default_action.value, "authenticate_cognito", {})]
+        for_each = length(keys(lookup(default_action.value, "authenticate_cognito", {}))) == 0 ? [] : [
+          lookup(default_action.value, "authenticate_cognito", {})
+        ]
 
         content {
           # Max 10 extra params
@@ -577,7 +593,9 @@ resource "aws_lb_listener" "frontend_https" {
       }
 
       dynamic "authenticate_oidc" {
-        for_each = length(keys(lookup(default_action.value, "authenticate_oidc", {}))) == 0 ? [] : [lookup(default_action.value, "authenticate_oidc", {})]
+        for_each = length(keys(lookup(default_action.value, "authenticate_oidc", {}))) == 0 ? [] : [
+          lookup(default_action.value, "authenticate_oidc", {})
+        ]
 
         content {
           # Max 10 extra params
@@ -598,7 +616,9 @@ resource "aws_lb_listener" "frontend_https" {
   }
 
   dynamic "default_action" {
-    for_each = contains(["authenticate-oidc", "authenticate-cognito"], lookup(var.https_listeners[count.index], "action_type", {})) ? [var.https_listeners[count.index]] : []
+    for_each = contains([
+      "authenticate-oidc", "authenticate-cognito"
+    ], lookup(var.https_listeners[count.index], "action_type", {})) ? [var.https_listeners[count.index]] : []
     content {
       type             = "forward"
       target_group_arn = aws_lb_target_group.main[lookup(default_action.value, "target_group_index", count.index)].id

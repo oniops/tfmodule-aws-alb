@@ -34,6 +34,12 @@ variable "enable_cross_zone_load_balancing" {
   default     = false
 }
 
+variable "enforce_security_group_inbound_rules_on_private_link_traffic" {
+  description = "Indicates whether inbound security group rules are enforced for traffic originating from a PrivateLink. Only valid for Load Balancers of type network. The possible values are on and off."
+  type        = string
+  default     = "on"
+}
+
 variable "extra_ssl_certs" {
   description = "A list of maps describing any extra SSL certificates to apply to the HTTPS listeners. Required key/values: certificate_arn, https_listener_index (the index of the listener within https_listeners which the cert applies toward)."
   type        = list(map(string))
