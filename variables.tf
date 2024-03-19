@@ -119,9 +119,17 @@ variable "load_balancer_update_timeout" {
 }
 
 variable "access_logs" {
-  description = "Map containing access logging configuration for load balancer."
   type        = map(string)
   default     = {}
+  description = <<EOF
+Map containing access logging configuration for load balancer.
+
+  access_logs = {
+      enabled = true
+      bucket  = aws_s3_bucket.elb_logs.id
+      prefix  = "access-logs"
+  }
+EOF
 }
 
 variable "subnets" {
