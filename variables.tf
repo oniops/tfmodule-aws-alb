@@ -126,8 +126,8 @@ Map containing access logging configuration for load balancer.
 
   access_logs = {
       enabled = true
-      bucket  = aws_s3_bucket.elb_logs.id
-      prefix  = "access-logs"
+      bucket  = "<PREFIX>-alb-access-logs-s3"
+      prefix  = "AWSLogs/<ACCOUNT_ID>/elasticloadbalancing/<REGION>/"
   }
 EOF
 }
